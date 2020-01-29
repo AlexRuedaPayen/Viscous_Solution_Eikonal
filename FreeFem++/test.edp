@@ -1,0 +1,10 @@
+real x0=-2;
+real x1=2;
+
+real y0=-2;
+real y1=2;
+
+int n=1000;
+int m=1000;
+
+mesh Th=square(n,m,[x0+(x1-x0)*x,y0+(y1-y0)*y],flags=1)

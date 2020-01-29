@@ -1,0 +1,33 @@
+//savoir placer des trous
+
+macro grad(u) [dx(u),dy(u)]//
+
+real H = 10, L=20, Lr = 5, R = 1.5/(2*pi), deltay=H/5, deltax = (L -Lr )/11;
+// passer a 40 elebe  10 rang de 4 eleves
+real X0 = Lr +deltay;
+real Y0 =  deltay;
+	border bas(t=0, L) {x=t; y=0;label=1;}
+	border droite(t=0, H) {x=L; y=t;label=1;}
+	border haut(t=L,0) {x=t; y=H;label=1;}
+	border gauche(t=H,0) {x=0; y=t;label=1;}
+
+
+	border C(t=2*pi,0;i) {
+		int ix = i/3, iy = i%3;  // ici on dit que on veut 3 par rang
+		x =  X0+deltax*ix + R*cos(t);
+		y = Y0+deltay*iy +  R*sin(t); label=5;}
+
+
+real meshsize= 0.1;
+int Nx= L/meshsize, Ny=H/meshsize;
+
+int[int] Nc(9);  // c'est ici que on defini le nombre d'éléments
+Nc= R*2*pi/meshsize;
+
+func bordext = bas(Nx)+haut(Nx)+gauche(Ny)+droite(Ny);
+func bordC = C(Nc);
+
+plot(bordext,bordC,wait=1);
+//for( int iter=0; iter<10; ++iter)
+//{
+mesh Th= buildmesh(bordext+bordC);

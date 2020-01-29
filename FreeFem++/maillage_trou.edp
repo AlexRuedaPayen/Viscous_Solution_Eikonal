@@ -1,0 +1,64 @@
+//savoir placer des trous
+
+macro grad(u) [dx(u),dy(u)]//
+
+
+real L=10;
+real H=5;
+int h=1; //coté des carrés
+real R=0.5;
+real ec=0.6;
+
+
+real x0carre1=randreal1()*(L-h);
+real y0carre1=randreal1()*(H-h);
+real x0carre2=randreal1()*(L-h);
+real y0carre2=randreal1()*(H-h);
+
+
+border bas(t=0,L){x=t; y=0; label=1;}
+border droite(t=0,H){x=L; y=t; label=1;}
+border haut(t=L,0){x=t; y=H; label=1;}
+border gauche(t=H,0){x=0; y=t; label=1;}
+
+border cerclehg(t=0,2*pi){ x=R*cos(t)+ec  ; y=R*sin(t)+H-ec ; label=5 ;}
+border cerclehd(t=0,2*pi){ x=R*cos(t)+L-ec  ; y=R*sin(t)+H-ec ; label=5 ;}
+border cerclebg(t=0,2*pi){ x=R*cos(t)+ec  ; y=R*sin(t)+ec ; label=5 ;}
+border cerclebd(t=0,2*pi){ x=R*cos(t)+L-ec  ; y=R*sin(t)+ec ; label=5 ;}
+// c'est avec le t juste du dessus que on choisit si on veut mailler
+// l'interieur du cercle
+
+
+real meshsize=0.5;
+
+real Nx=L/meshsize;
+real Ny=H/meshsize;
+real Ncarre=h/meshsize;
+int Rc=R*5*pi/meshsize;
+
+func bordtext = bas(Nx)+haut(Nx)+droite(Ny)+gauche(Ny) ;
+func bordC = cerclehg(Rc)+cerclehd(Rc)+cerclebg(Rc)+cerclebd(Rc);
+
+mesh Th = buildmesh(bordtext+bordC);
+plot(Th,wait=1);
+
+real reg1=Th(x0carre1+h*0.1,y0carre1+h*0.1).region;
+real reg2=Th(x0carre2+h*0.1,y0carre2+h*0.1).region;
+real reg0=Th(0.1,0.1).region;
+
+
+fespace Vh(Th,P1);
+Vh u,v;
+func k=10;
+
+func f = (region==reg1)+(region==reg2);
+
+
+solve laplace(u,v)=
+  -int2d(Th)(k*grad(u)'*grad(v))
+  -int1d(Th)(20*v)
+  +int2d(Th)(k*u*v)
+  +int2d(Th)(f*v)
+  + on(2,u=20);
+
+plot(u,wait=1);

@@ -1,0 +1,73 @@
+macro grad(u) [dx(u),dy(u)]//
+
+
+int H = 10;
+int L = 20;
+int R=1;
+
+func k=10;
+
+int ec=2;
+
+
+for(int bouge=0; bouge<10; bouge++){
+
+real xx1= randreal1()*8+1;
+real xx2= randreal1()*8+11;
+real yy1= randreal1()*8+1;
+real yy2= randreal1()*8+1;
+
+
+border bas(t=0, L) {x=t; y=0;label=1;}
+border droite(t=0, H) {x=L; y=t;label=1;}
+border haut(t=L,0) {x=t; y=H;label=1;}
+border gauche(t=H,0) {x=0; y=t;label=1;}
+
+
+//border cercleg(t=0,2*pi){ x=R*cos(t)+L/2-ec  ; y=R*sin(t)+H-ec-0.5 ; label=2 ;}
+//border cercled(t=0,2*pi){ x=R*cos(t)+L/2+ec  ; y=R*sin(t)+H-ec-0.5 ; label=2 ;}
+
+border cercleg(t=0,2*pi){ x=R*cos(t)+xx1  ; y=R*sin(t)+yy1 ; label=2 ;} //aléatoire
+border cercled(t=0,2*pi){ x=R*cos(t)+xx2  ; y=R*sin(t)+yy1 ; label=2 ;} //aléatoire
+
+
+real meshsize=0.3;
+
+int ny = H/meshsize;
+int nx = L/meshsize;
+int nc=2*pi/meshsize;
+
+func bord=bas(nx)+haut(nx)+gauche(ny)+droite(ny);
+func cerc=cercleg(nc)+cercled(nc);
+
+
+plot(bord+cerc,wait=1);
+
+
+mesh Th = buildmesh(bord+cerc);
+plot(Th,wait=1);
+
+
+real reg1=Th(xx1,yy1).region;
+real reg2=Th(xx2,yy2).region;
+real reg0=Th(0.01,0.01).region;
+
+
+cout << reg1 << " " << reg2 <<" " << reg0 << endl;
+
+func f = (region==reg1)+(region==reg2);
+
+fespace Vh(Th,P1);
+Vh u,v;
+
+solve laplace(u,v)=
+  int2d(Th)(k*grad(u)'*grad(v))
+  -int2d(Th)(f*v)
+  -int1d(Th,2)(20*v)
+  +int1d(Th,2)(u*v)
+  +on(1,u=20);
+
+plot(u,wait=1);
+
+
+}

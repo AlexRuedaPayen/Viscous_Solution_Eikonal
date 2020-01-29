@@ -28,7 +28,6 @@ struct Edges {
   int second_neighbour;
   Edges * next_edge;
   Edges() {vertices=std::make_pair(-1,-1);first_neighbour=-1;second_neighbour=-1;next_edge=nullptr;}
-  ~Edges() {std::cout<<"Thread alive"<<std::endl;next_edge=nullptr;}
 };
 
 class Simplex {
@@ -66,18 +65,7 @@ class Mesh2d {
     Simplex *t;
 
     Mesh2d(const char *  filename); 
-    ~Mesh2d() { 
-      std::cout<<"Debug3"<<std::endl;
-      for (int i=0;i<nv;++i) {register_edges[i]=nullptr;}
-      delete[] register_edges; 
-     //for (int i=0;i<3*nt;++i) {working_edges[i].next_edge=nullptr;}
-      std::cout<<"Debug4"<<std::endl;
-      //delete[] working_edges; 
-      std::cout<<"Debug5"<<std::endl;
-      delete[] v; 
-      std::cout<<"Debug6"<<std::endl;
-      delete[] t;
-      std::cout<<"Debug7"<<std::endl;}
+    ~Mesh2d() { delete [] v; delete [] t; }
     // destuctor => careful with copie operator  
     // no copy operator
     // chech index number
@@ -124,11 +112,4 @@ class Solve_Eikonale : public Mesh2d {
       void sign(R * fhk);
 
       Solve_Eikonale(const char * filename);
-      ~Solve_Eikonale(){
-        std::cout<<"Debug1"<<std::endl;
-        delete[] u;
-        std::cout<<"Debug2"<<std::endl;
-        delete[] queue;
-        std::cout<<"Debug2bus"<<std::endl;}
-      friend std::ostream& operator<<(std::ostream&,const Solve_Eikonale &);
 };

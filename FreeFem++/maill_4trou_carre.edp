@@ -1,0 +1,42 @@
+real H= 10,L=20, h=1;
+
+int deltax=7;
+int deltay=3;
+
+real xx1= L/3.5;
+real yy1= H/1.5;
+
+real xx2= L/1.5;
+real yy2= H/1.5;
+
+real xx3= L/3.5;
+real yy3= H/3.5;
+
+real xx4= L/1.5;
+real yy4= H/3.5;
+
+
+real meshsize = 0.3;
+int nh = h/meshsize;
+
+real[int,int]  BC=[ [ 0,0 ],[0,1],[1,1],[1,0]];
+real[int] hh=[H,h,h,h,h];
+real[int] ll=[L,h,h,h,h];
+real[int,int] XC=[[0,0],[xx1,yy1],[xx2,yy2],[xx3,yy3],[xx4,yy4]];
+int[int] labs=[1,2,1,2, 3,3,3,3, 4,4,4,4,  5,5,5,5,  6,6,6,6];
+
+
+int[int] NN=[H/meshsize,L/meshsize,H/meshsize,L/meshsize,nh,nh,nh,nh  ,nh,nh,nh,nh,nh,nh,nh,nh  ,nh,nh,nh,nh];
+border Seg(t=0,1; i3) { int i= i3%4, j = i3/4;
+	int ip=i+1; if( ip == 4) ip=0;
+	real xi=BC(i,0), yi=BC(i,1);
+	real xp=BC(ip,0), yp=BC(ip,1);
+	real t1= 1-t;
+	x = (t*xi+t1*xp)*ll[j] +XC(j,0);
+	y = (t*yi+t1*yp)*hh[j] +XC(j,1);
+	label= labs[i3];
+  }
+
+  plot(Seg(NN),wait=1);
+	mesh Th = buildmesh(Seg(NN));
+	plot(Th,wait=1);

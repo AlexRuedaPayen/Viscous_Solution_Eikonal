@@ -1,0 +1,40 @@
+// Variables
+real H = 10, L=20;//Hauteur + largeur rect. ext
+real L1 = L/2, H1 = H/2;//Hauteur+largeur rect. int
+
+real meshsize = 0.5;
+
+//Pr prob physique
+
+
+//def macro
+
+macro grad(u)[dx(u),dy(u)]//
+
+//finesses
+
+int NL = L/meshsize;
+int NH = H/meshsize;
+
+int NL1 = L1/meshsize;
+int NH1 = H1/meshsize;
+
+//Frontieres
+
+//Front. ext
+border haut(t = L,-L){x = t ; y = H ; label = 1;};
+border gauche(t = H,-H){x=-L ; y = t ; label = 1;};
+border bas(t=-L,L){x = t ; y = -H ; label = 1;};
+border droite(t=-H,H){x = L ; y=t ; label=1;};
+//Front. int
+border haut1(t = -L1,L1){x=t ; y=H1 ; label =2;};
+border droite1(t=H1,-H1){x = L1 ; y = t ; label=2;};
+border bas1(t = L1,-L1){x = t ; y = -H1 ; label = 2;};
+border gauche1(t=-H1,H1){x = -L1 ; y = t ; label = 2;};
+//dessin fronts
+func cext = haut(NL)+bas(NL)+droite(NH)+gauche(NH);
+func cint = haut1(NL1)+bas1(NL1)+droite1(NH1)+gauche1(NH1);;
+
+mesh Th = buildmesh(cext+cint);
+
+plot(Th, wait = 1);

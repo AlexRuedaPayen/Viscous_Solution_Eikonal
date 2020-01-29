@@ -1,0 +1,24 @@
+macro grad(u) [dx(u), dy(u)]//
+macro Grad(u1,u2) [grad(u1),grad(u2)]//
+macro div(u1,u2) ( dx(u1)+dy(u2) )//
+
+
+mesh Th = square(10,10);
+
+
+fespace  Vh(Th,P2);
+fespace Uh(Th,P1);
+
+real eps=1e-10;
+
+Vh u1,u2,v1,v2;
+Uh p,q;
+
+solve STOK([u1,u2,p],[v1,v2,q])=int2d(Th)(
+                        (Grad(u1,u2):Grad(v1,v2))
+                        -p*div(v1,v2)
+                        -q*div(u1,u2)
+                        +p*q*eps)
+                        + on(4,2,3,u1=0,u2=0)
+                        + on(1, u1=1,u2=0);
+plot([u1,u2],wait=1);

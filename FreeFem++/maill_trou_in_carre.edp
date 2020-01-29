@@ -1,0 +1,32 @@
+
+real L=1;
+real H=1;
+int h=1; //coté des carrés
+real R=1;
+real ec=0.6;
+
+
+border bas(t=0,L){x=t; y=0; label=1;}
+border droite(t=0,H){x=L; y=t; label=1;}
+border haut(t=L,0){x=t; y=H; label=1;}
+border gauche(t=H,0){x=0; y=t; label=1;}
+
+border cercle(t=0,2*pi){ x=R*cos(t)+L/2  ; y=R*sin(t)+H/2 ; label=5 ;}
+// c'est avec le t juste du dessus que on choisit si on veut mailler
+// l'interieur du cercle
+
+
+real meshsize=0.01;
+
+real Nx=L/meshsize;
+real Ny=H/meshsize;
+real Ncarre=h/meshsize;
+int Rc=R*5*pi/meshsize;
+
+func bordtext = bas(Nx)+haut(Nx)+droite(Ny)+gauche(Ny) ;
+func bordC = cercle(Rc);
+
+mesh Th = buildmesh(bordtext+bordC);
+//plot(bordtext+bordC,wait=1);
+plot(Th,wait=1);
+savemesh(Th,"./mail_trou_in_carre.msh");

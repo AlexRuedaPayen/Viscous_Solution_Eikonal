@@ -1,0 +1,93 @@
+// Variables
+real H = 2.5, L=5.;//Hauteur + largeur rect. ext
+real R = 1.;//Rayon rond. int
+
+
+//centres normaux
+
+real[int] Centre1(2);
+Centre1[0] = -2.5 ; Centre1[1] =  0;
+real[int] Centre2(2);
+Centre2[0] = 2.5 ; Centre2[1] =  0;
+
+real meshsize = 0.1;
+for(int k = 0 ; k<10 ; k++){
+//centres aleatoires
+bool moove = true;
+
+if(moove){
+randreal1()*2*(L-1)-(L-1);
+Centre1[0] = randreal1()*2*(L-1)-(L-1);//x_cercle_1
+Centre1[1] = randreal1()*2*(H-1)-(H-1);//y_cercle_1
+Centre2[0] = randreal1()*2*(L-1)-(L-1);//x_cercle_2
+Centre2[1] = randreal1()*2*(H-1)-(H-1);//y_cercle_2
+};
+
+
+
+
+
+//def macro
+
+macro grad(u)[dx(u),dy(u)]//
+
+//finesses
+
+int NL = L/meshsize;//finesse largeur
+int NH = H/meshsize;//finesse hauteur
+
+int NR = (R*2*pi)/meshsize;//finesse cercle
+
+//Frontieres
+
+//Front. ext
+border haut(t = L,-L){x = t ; y = H ; label = 1;};
+border gauche(t = H,-H){x=-L ; y = t ; label = 1;};
+border bas(t=-L,L){x = t ; y = -H ; label = 1;};
+border droite(t=-H,H){x = L ; y=t ; label=1;};
+//Fronts. int
+
+border C1(t = 0, 2.*pi){x = R*cos(t) + Centre1[0] ; y = R*sin(t) + Centre1[1]; label = 2;};
+border C2(t = 0, 2.*pi){x = R*cos(t) + Centre2[0] ; y = R*sin(t) + Centre2[1]; label = 2;};
+b
+//dessin fronts
+func cext = haut(NL)+bas(NL)+droite(NH)+gauche(NH);
+func cint = C1(NR)+C2(NR);
+
+mesh Th = buildmesh(cext+cint);
+
+plot(Th, wait = 1);
+
+//def. fcts indic pour "f"
+
+real reg1 = Th(Centre1[0],Centre1[1]).region;
+real reg2 = Th(Centre2[0],Centre2[1]).region;
+real reg0 = Th(0,0).region;
+
+cout << reg1 << endl << reg2 << endl << reg0 << endl;
+
+//def. fcts P1
+
+fespace Vh(Th,P1);
+
+Vh u,v;
+
+func k = 10;
+
+func f = (region==reg1) + (region==reg2);
+
+//Reso eq.
+
+
+solve Eq(u,v,solver=LU)=
+int2d(Th)(k*grad(u)'*grad(v))//forme bilin. 2d
++int1d(Th,2)(u*v) //forme bilin. 1d
+-int2d(Th)(f*v) //forme lin. 2d
+-int1d(Th,2)(20*v)//forme lin. 1d
++on(1, u =20);
+
+
+
+plot(u,wait=1);
+
+}

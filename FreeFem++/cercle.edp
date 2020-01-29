@@ -1,0 +1,13 @@
+// usage: FreeFem++ carre.edp -nn 10 
+include "getARGV.idp"
+int nn=getARGV("-nn",50);
+real R =getARGV("-R",1.);
+int wplot =getARGV("-plot",1);
+
+string sTh=getARGV("-Th","Th-"+nn+"-"+R);
+border C(t=0,2*pi){ x= R*cos(t); y=R*sin(t);label=1;}
+mesh Th=buildmesh(C(nn));
+cout << " sauve msh dans : \"" << sTh << "\"" <<endl; 
+savemesh(Th,sTh+".msh");
+
+if(wplot) plot(Th,cmm=sTh,ps=sTh+".eps");

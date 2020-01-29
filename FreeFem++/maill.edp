@@ -1,0 +1,26 @@
+real H = 10, L=20, R = H/10, L3=L/2, H3=H/2, h=3;
+
+
+	border bas(t=0, L) {x=t; y=0;label=1;}
+	border droite(t=0, H) {x=L; y=t;label=1;}
+	border haut(t=L,0) {x=t; y=H;label=1;}
+	border gauche(t=H,0) {x=0; y=t;label=1;}
+
+	border bas1(t=L3+h, L3-h) {x=t; y=H3-h;label=2;}
+	border gauche1(t=H3-h,H3+h) {x=L3-h; y=t;label=2;}
+	border haut1(t=L3-h,L3+h) {x=t; y=H3+h;label=2;}
+	border droite1(t=H3+h, H3-h) {x=L3+h; y=t;label=2;}
+
+
+
+real meshsize= 0.5;
+int nx1=(L/2)/meshsize;
+int ny1=(H/2)/meshsize;
+int Nx= L/meshsize, Ny=H/meshsize;
+int Nc= R*2*pi/meshsize;
+func bordext = bas(Nx)+haut(Nx)+gauche(Ny)+droite(Ny);
+func bordC = bas1(nx1)+haut1(nx1)+gauche1(ny1)+droite1(ny1);
+plot(bordext,bordC,wait=1);
+
+mesh Th= buildmesh(bordext+bordC);
+plot(Th,wait=1);
